@@ -1,0 +1,4 @@
+opcua
+pygame
+flask
+pysqlite3
