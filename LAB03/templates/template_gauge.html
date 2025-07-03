@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        function drawGauge(value) {
+            var data = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Value', value]
+            ]);
+
+            var options = {
+                width: 400, height: 120,
+                redFrom: 171, redTo: 200,
+                yellowFrom:130, yellowTo: 170,
+                minorTicks: 5, max: 200
+            };
+
+            var chart = new google.visualization.Gauge(document.getElementById('gauge'));
+            chart.draw(data, options);
+        }
+
+        function updateValue() {
+            $.getJSON('/get_latest_value', function(data) {
+                $('#value').text(data.value);
+                $('#timestamp').text(data.timestamp);
+                drawGauge(parseFloat(data.value));
+            });
+        }
+
+        $(document).ready(function() {
+            google.charts.load('current', {'packages':['gauge']});
+            google.charts.setOnLoadCallback(updateValue);
+
+            setInterval(updateValue, 500); // Update every 0.5 seconds
+        });
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Dashboard</h1>
+    <center>
+    <div class="card">
+        <div class="card-header">
+            Último valor inserido no Banco de Dados (database.db)
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Valor: <span id="value">Carregando...</span></h5>
+            <p class="card-text">Horário: <span id="timestamp">Carregando...</span></p>
+        </div>
+        <div class="card-header">
+            Medidor
+        </div>
+        <div class="card-body">
+            <div id="gauge" style="width: 400px; height: 120px;"></div>
+        </div>
+    </div>
+    </center>
+</div>
+</body>
+</html>
